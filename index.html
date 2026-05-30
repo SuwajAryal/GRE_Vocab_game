@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GRE Vocab Mountain — Master Your Words</title>
+    <meta name="description" content="Interactive GRE vocabulary game based on GregMat's Vocab Mountain. Day-wise learning with flashcards, quizzes, matching games, and progress tracking.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Particle Background -->
+    <canvas id="particles-canvas"></canvas>
+
+    <!-- App Container -->
+    <div id="app">
+        <!-- Navigation -->
+        <nav id="main-nav">
+            <div class="nav-brand" onclick="showScreen('home')">
+                <div class="brand-icon">🏔️</div>
+                <div class="brand-text">
+                    <span class="brand-title">Vocab Mountain</span>
+                    <span class="brand-subtitle">GregMat GRE Prep</span>
+                </div>
+            </div>
+            <div class="nav-links">
+                <button class="nav-link active" data-screen="home" onclick="showScreen('home')">
+                    <span class="nav-icon">🏠</span> Home
+                </button>
+                <button class="nav-link" data-screen="learn" onclick="showScreen('learn')">
+                    <span class="nav-icon">📖</span> Learn
+                </button>
+                <button class="nav-link" data-screen="games" onclick="showScreen('games')">
+                    <span class="nav-icon">🎮</span> Games
+                </button>
+                <button class="nav-link" data-screen="stats" onclick="showScreen('stats')">
+                    <span class="nav-icon">📊</span> Stats
+                </button>
+            </div>
+            <div class="nav-streak">
+                <span class="streak-flame">🔥</span>
+                <span id="streak-count">0</span>
+                <span class="streak-label">day streak</span>
+            </div>
+        </nav>
+
+        <!-- HOME SCREEN -->
+        <section id="screen-home" class="screen active">
+            <div class="hero">
+                <div class="hero-content">
+                    <h1 class="hero-title">
+                        <span class="gradient-text">Conquer the</span>
+                        <br>
+                        <span class="gradient-text-alt">Vocab Mountain</span>
+                    </h1>
+                    <p class="hero-subtitle">Master 900+ GRE words through interactive games, flashcards, and daily challenges. Built on GregMat's proven vocabulary system.</p>
+                    <div class="hero-stats">
+                        <div class="hero-stat">
+                            <span class="hero-stat-value" id="total-words-learned">0</span>
+                            <span class="hero-stat-label">Words Learned</span>
+                        </div>
+                        <div class="hero-stat">
+                            <span class="hero-stat-value" id="total-days-completed">0</span>
+                            <span class="hero-stat-label">Days Completed</span>
+                        </div>
+                        <div class="hero-stat">
+                            <span class="hero-stat-value" id="total-accuracy">0%</span>
+                            <span class="hero-stat-label">Accuracy</span>
+                        </div>
+                    </div>
+                    <div class="hero-actions">
+                        <button class="btn btn-primary btn-lg pulse-glow" onclick="continueLearning()">
+                            <span>Continue Learning</span>
+                            <span class="btn-arrow">→</span>
+                        </button>
+                        <button class="btn btn-secondary btn-lg" onclick="showScreen('games')">
+                            <span>Play Games</span>
+                            <span class="btn-arrow">🎮</span>
+                        </button>
+                    </div>
+                </div>
+                <div class="hero-visual">
+                    <div class="mountain-svg">
+                        <svg viewBox="0 0 400 300" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <defs>
+                                <linearGradient id="mountain-grad" x1="200" y1="0" x2="200" y2="300" gradientUnits="userSpaceOnUse">
+                                    <stop offset="0%" stop-color="#818cf8"/>
+                                    <stop offset="100%" stop-color="#6366f1"/>
+                                </linearGradient>
+                                <linearGradient id="mountain-grad2" x1="200" y1="50" x2="200" y2="300" gradientUnits="userSpaceOnUse">
+                                    <stop offset="0%" stop-color="#a78bfa"/>
+                                    <stop offset="100%" stop-color="#7c3aed"/>
+                                </linearGradient>
+                                <linearGradient id="snow-grad" x1="200" y1="0" x2="200" y2="80" gradientUnits="userSpaceOnUse">
+                                    <stop offset="0%" stop-color="#ffffff"/>
+                                    <stop offset="100%" stop-color="#e0e7ff" stop-opacity="0"/>
+                                </linearGradient>
+                            </defs>
+                            <!-- Back mountain -->
+                            <path d="M50 300 L180 60 L310 300 Z" fill="url(#mountain-grad)" opacity="0.5"/>
+                            <!-- Front mountain -->
+                            <path d="M90 300 L200 30 L350 300 Z" fill="url(#mountain-grad2)"/>
+                            <!-- Snow cap -->
+                            <path d="M175 80 L200 30 L225 80 Q200 95 175 80 Z" fill="url(#snow-grad)"/>
+                            <!-- Flag -->
+                            <line x1="200" y1="30" x2="200" y2="5" stroke="#fbbf24" stroke-width="2"/>
+                            <path d="M200 5 L220 12 L200 19 Z" fill="#fbbf24"/>
+                            <!-- Progress path dots -->
+                            <circle cx="160" cy="200" r="4" fill="#fbbf24" class="path-dot"/>
+                            <circle cx="180" cy="170" r="4" fill="#fbbf24" class="path-dot" style="animation-delay: 0.2s"/>
+                            <circle cx="195" cy="140" r="4" fill="#fbbf24" class="path-dot" style="animation-delay: 0.4s"/>
+                            <circle cx="210" cy="110" r="4" fill="#fbbf24" class="path-dot" style="animation-delay: 0.6s"/>
+                            <circle cx="205" cy="80" r="4" fill="#fbbf24" class="path-dot" style="animation-delay: 0.8s"/>
+                            <!-- Climber -->
+                            <circle id="climber-dot" cx="160" cy="200" r="6" fill="#34d399"/>
+                            <circle id="climber-glow" cx="160" cy="200" r="10" fill="#34d399" opacity="0.3"/>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Today's Challenge -->
+            <div class="section-header">
+                <h2>📅 Today's Word of the Day</h2>
+            </div>
+            <div id="word-of-day" class="wod-card">
+                <!-- Filled by JS -->
+            </div>
+
+            <!-- Quick Access Groups -->
+            <div class="section-header">
+                <h2>🗓️ Your Groups Overview</h2>
+                <p>Click a group to start learning</p>
+            </div>
+            <div id="groups-grid" class="groups-grid">
+                <!-- Filled by JS -->
+            </div>
+        </section>
+
+        <!-- LEARN SCREEN -->
+        <section id="screen-learn" class="screen">
+            <div class="learn-header">
+                <button class="btn btn-ghost" onclick="showScreen('home')">← Back</button>
+                <h2 id="learn-title">Group 1</h2>
+                <div class="learn-progress">
+                    <span id="learn-progress-text">0 / 30</span>
+                    <div class="progress-bar">
+                        <div id="learn-progress-bar" class="progress-fill"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Flashcard Mode -->
+            <div id="flashcard-area" class="flashcard-area">
+                <div id="flashcard" class="flashcard" onclick="flipCard()">
+                    <div class="flashcard-inner">
+                        <div class="flashcard-front">
+                            <span class="flashcard-label">Word</span>
+                            <h2 id="flash-word" class="flash-word">Loading...</h2>
+                            <p class="flash-hint">Click to reveal definition</p>
+                        </div>
+                        <div class="flashcard-back">
+                            <span class="flashcard-label">Definition</span>
+                            <h3 id="flash-word-back" class="flash-word-back"></h3>
+                            <p id="flash-definition" class="flash-definition"></p>
+                            <p id="flash-example" class="flash-example"></p>
+                        </div>
+                    </div>
+                </div>
+                <div class="flashcard-controls">
+                    <button class="btn btn-danger" onclick="markWord('hard')" title="Hard - will see again soon">
+                        <span>😓 Hard</span>
+                    </button>
+                    <button class="btn btn-ghost" onclick="prevCard()" title="Previous word">
+                        ← Prev
+                    </button>
+                    <span id="card-counter" class="card-counter">1 / 30</span>
+                    <button class="btn btn-ghost" onclick="nextCard()" title="Next word">
+                        Next →
+                    </button>
+                    <button class="btn btn-success" onclick="markWord('easy')" title="Easy - you know this!">
+                        <span>😎 Easy</span>
+                    </button>
+                </div>
+                <div class="flashcard-actions">
+                    <button class="btn btn-primary" onclick="startQuiz()">📝 Take Quiz on This Group</button>
+                    <button class="btn btn-secondary" onclick="startMatching()">🔗 Play Matching Game</button>
+                    <button class="btn btn-secondary" onclick="startSpelling()">✏️ Spelling Challenge</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- GAMES SCREEN -->
+        <section id="screen-games" class="screen">
+            <!-- Game Selection -->
+            <div id="game-select" class="game-select">
+                <div class="section-header center">
+                    <h2>🎮 Choose Your Game</h2>
+                    <p>Pick a group and game mode to practice</p>
+                </div>
+
+                <!-- Group Selector for Games -->
+                <div class="game-group-selector">
+                    <label>Select Group:</label>
+                    <select id="game-group-select" onchange="updateGameGroup()">
+                        <!-- Filled by JS -->
+                    </select>
+                    <label style="margin-left: 16px;">Or play:</label>
+                    <button class="btn btn-accent btn-sm" onclick="playRandomMix()">🎲 Random Mix</button>
+                </div>
+
+                <div class="games-grid">
+                    <div class="game-card" onclick="startQuiz()">
+                        <div class="game-card-icon">📝</div>
+                        <h3>Definition Quiz</h3>
+                        <p>Match words to their correct definitions. 4 choices, beat the clock!</p>
+                        <div class="game-card-difficulty">
+                            <span class="difficulty-dot easy"></span>
+                            <span class="difficulty-dot easy"></span>
+                            <span class="difficulty-dot"></span>
+                        </div>
+                    </div>
+                    <div class="game-card" onclick="startMatching()">
+                        <div class="game-card-icon">🔗</div>
+                        <h3>Match Mania</h3>
+                        <p>Match 8 words to their definitions as fast as you can. Memory meets speed!</p>
+                        <div class="game-card-difficulty">
+                            <span class="difficulty-dot easy"></span>
+                            <span class="difficulty-dot easy"></span>
+                            <span class="difficulty-dot easy"></span>
+                        </div>
+                    </div>
+                    <div class="game-card" onclick="startSpelling()">
+                        <div class="game-card-icon">✏️</div>
+                        <h3>Spelling Bee</h3>
+                        <p>Read the definition, type the word. Perfect for mastering tough spellings!</p>
+                        <div class="game-card-difficulty">
+                            <span class="difficulty-dot easy"></span>
+                            <span class="difficulty-dot easy"></span>
+                            <span class="difficulty-dot easy"></span>
+                        </div>
+                    </div>
+                    <div class="game-card" onclick="startContextClues()">
+                        <div class="game-card-icon">🧩</div>
+                        <h3>Context Clues</h3>
+                        <p>Fill in the blank with the right word. GRE-style sentence completion!</p>
+                        <div class="game-card-difficulty">
+                            <span class="difficulty-dot easy"></span>
+                            <span class="difficulty-dot easy"></span>
+                            <span class="difficulty-dot easy"></span>
+                        </div>
+                    </div>
+                    <div class="game-card" onclick="startSynonymAntonym()">
+                        <div class="game-card-icon">🔄</div>
+                        <h3>Synonym Sprint</h3>
+                        <p>Quick-fire synonym/antonym identification. Train your word associations!</p>
+                        <div class="game-card-difficulty">
+                            <span class="difficulty-dot easy"></span>
+                            <span class="difficulty-dot easy"></span>
+                            <span class="difficulty-dot"></span>
+                        </div>
+                    </div>
+                    <div class="game-card" onclick="startReview()">
+                        <div class="game-card-icon">🔁</div>
+                        <h3>Weak Words Review</h3>
+                        <p>Focus on words you've marked as hard. Smart spaced repetition!</p>
+                        <div class="game-card-difficulty">
+                            <span class="difficulty-dot easy"></span>
+                            <span class="difficulty-dot"></span>
+                            <span class="difficulty-dot"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quiz Game Area -->
+            <div id="game-area" class="game-area hidden">
+                <div class="game-header">
+                    <button class="btn btn-ghost" onclick="exitGame()">✕ Exit</button>
+                    <div class="game-info">
+                        <span id="game-title" class="game-title">Definition Quiz</span>
+                        <span id="game-score" class="game-score">Score: 0</span>
+                    </div>
+                    <div class="game-timer">
+                        <div id="timer-bar" class="timer-bar">
+                            <div id="timer-fill" class="timer-fill"></div>
+                        </div>
+                        <span id="timer-text">30s</span>
+                    </div>
+                </div>
+
+                <div id="game-content" class="game-content">
+                    <!-- Dynamic game content rendered here -->
+                </div>
+
+                <!-- Results -->
+                <div id="game-results" class="game-results hidden">
+                    <div class="results-card">
+                        <div id="results-emoji" class="results-emoji">🎉</div>
+                        <h2 id="results-title">Great Job!</h2>
+                        <div class="results-stats">
+                            <div class="result-stat">
+                                <span class="result-value" id="result-correct">0</span>
+                                <span class="result-label">Correct</span>
+                            </div>
+                            <div class="result-stat">
+                                <span class="result-value" id="result-wrong">0</span>
+                                <span class="result-label">Wrong</span>
+                            </div>
+                            <div class="result-stat">
+                                <span class="result-value" id="result-accuracy">0%</span>
+                                <span class="result-label">Accuracy</span>
+                            </div>
+                            <div class="result-stat">
+                                <span class="result-value" id="result-time">0s</span>
+                                <span class="result-label">Time</span>
+                            </div>
+                        </div>
+                        <div id="results-words" class="results-words"></div>
+                        <div class="results-actions">
+                            <button class="btn btn-primary" onclick="replayGame()">🔁 Play Again</button>
+                            <button class="btn btn-secondary" onclick="exitGame()">← Back to Games</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- STATS SCREEN -->
+        <section id="screen-stats" class="screen">
+            <div class="section-header center">
+                <h2>📊 Your Progress</h2>
+                <p>Track your vocabulary mastery journey</p>
+            </div>
+            <div class="stats-grid">
+                <div class="stat-card large">
+                    <div class="stat-icon">📈</div>
+                    <div class="stat-info">
+                        <span class="stat-value" id="stat-total-words">0</span>
+                        <span class="stat-label">Total Words Studied</span>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">✅</div>
+                    <div class="stat-info">
+                        <span class="stat-value" id="stat-mastered">0</span>
+                        <span class="stat-label">Words Mastered</span>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">🎯</div>
+                    <div class="stat-info">
+                        <span class="stat-value" id="stat-accuracy">0%</span>
+                        <span class="stat-label">Overall Accuracy</span>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">🎮</div>
+                    <div class="stat-info">
+                        <span class="stat-value" id="stat-games">0</span>
+                        <span class="stat-label">Games Played</span>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">🔥</div>
+                    <div class="stat-info">
+                        <span class="stat-value" id="stat-streak">0</span>
+                        <span class="stat-label">Current Streak</span>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">⏱️</div>
+                    <div class="stat-info">
+                        <span class="stat-value" id="stat-time">0m</span>
+                        <span class="stat-label">Time Spent</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Word Mastery Breakdown -->
+            <div class="section-header">
+                <h2>📚 Group Mastery</h2>
+            </div>
+            <div id="mastery-grid" class="mastery-grid">
+                <!-- Filled by JS -->
+            </div>
+
+            <!-- Hard Words List -->
+            <div class="section-header">
+                <h2>😓 Words to Review</h2>
+                <p>Words you've marked as hard or gotten wrong</p>
+            </div>
+            <div id="hard-words-list" class="hard-words-list">
+                <p class="empty-state">No hard words yet! Start learning to track your progress.</p>
+            </div>
+
+            <div class="stats-actions">
+                <button class="btn btn-danger" onclick="confirmReset()">🗑️ Reset All Progress</button>
+            </div>
+        </section>
+    </div>
+
+    <!-- Confetti Canvas -->
+    <canvas id="confetti-canvas"></canvas>
+
+    <!-- Toast Container -->
+    <div id="toast-container"></div>
+
+    <script src="words.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
