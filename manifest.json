@@ -1,0 +1,22 @@
+{
+  "name": "GRE Vocab Mountain",
+  "short_name": "GRE Vocab",
+  "description": "Interactive day-wise GRE vocabulary game based on GregMat's Vocab Mountain.",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#0a0a1a",
+  "theme_color": "#6366f1",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "https://img.icons8.com/color/192/mountain.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "https://img.icons8.com/color/512/mountain.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
